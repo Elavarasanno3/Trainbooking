@@ -50,42 +50,22 @@ public class MenuModel {
     }
 
     public void cancelTicket(int passengerId) {
-        ArrayList <Train> trainList = TrainBookingDatabase.getInstance().getListTrains();
-        for(Train train : trainList) {
+        ArrayList<Train> trainList = TrainBookingDatabase.getInstance().getListTrains();
+        for (Train train : trainList) {
             ArrayList<Passenger> bookList = train.getConfirmedList();
             ArrayList<Passenger> waitingList = train.getWaitingList();
-            if(bookList.removeIf(passenger -> passengerId == passenger.getId())){
-                train.setAvailableSeat(train.getAvailableSeat()+1);
-                Passenger passenger = waitingList.get(0);
-                bookList.add(passenger);
-                train.setConfirmedList(bookList);
+            if (bookList.removeIf(passenger -> passengerId == passenger.getId())) {
+                train.setAvailableSeat(train.getAvailableSeat() + 1);
+                if(!waitingList.isEmpty()){
+                    Passenger passenger = waitingList.get(0);
+                    passenger.setStatus("confirm");
+                    bookList.add(passenger);
+                    train.setConfirmedList(bookList);
+                }
             }
-
             waitingList.removeIf(passenger -> passengerId == passenger.getId());
             System.out.println("Passenger removed success fully");
 
-        }
-
-    }
-
-    public void changeStatus(int passengerId) {
-        ArrayList <Train> trainList = TrainBookingDatabase.getInstance().getListTrains();
-        for(Train train : trainList){
-            ArrayList<Passenger> waitingList = train.getWaitingList();
-            ArrayList<Passenger> confirmedList = train.getConfirmedList();
-            for(Passenger passenger : waitingList){
-                if (passengerId == passenger.getId()){
-                    passenger.setStatus("booked");
-                    System.out.println("your status : " + passenger.getStatus());
-                }
-            }
-            for(Passenger passenger : confirmedList){
-                if (passengerId == passenger.getId()){
-                    System.out.println("your status :"+  passenger.getStatus());
-                }else{
-                    System.out.println("You entered the wrong passenger id");
-                }
-            }
         }
 
     }
